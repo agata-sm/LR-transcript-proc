@@ -1,0 +1,9 @@
+# OS
+.DS_Store
+
+#nextflow
+.nextflow
+.nextflow.log
+
+#git
+.git
