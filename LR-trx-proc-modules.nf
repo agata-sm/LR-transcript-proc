@@ -141,9 +141,9 @@ process espresso {
  
     smple_sheet_basename=`basename ${params.samplesheet}`
 
-    perl /espresso/src/ESPRESSO_S.pl -L ${params.samplesheet} -T ${task.cpus} --sort_buffer_size ${task.memory.giga}G -F ${params.refFa} -A ${params.refGTF} -O ${smpl_id}
+    perl /espresso/src/ESPRESSO_S.pl -L ${params.samplesheet} -T ${task.cpus} --sort_buffer_size ${task.memory} -F ${params.refFa} -A ${params.refGTF} -O ${smpl_id}
 
-    perl /espresso/src/ESPRESSO_C.pl -I ${smpl_id} -F ${params.refFa} -X 0 -T ${task.cpus} --sort_buffer_size ${task.memory.giga}G
+    perl /espresso/src/ESPRESSO_C.pl -I ${smpl_id} -F ${params.refFa} -X 0 -T ${task.cpus} --sort_buffer_size ${task.memory}
 
     perl /espresso/src/ESPRESSO_Q.pl -L "${smpl_id}/${smple_sheet_basename}.updated" -A ${params.refGTF} -T ${task.cpus}
 
