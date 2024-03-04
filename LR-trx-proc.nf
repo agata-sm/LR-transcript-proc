@@ -24,7 +24,7 @@ params.outdir = "${params.projdir}/${params.resdir}"
 
 params.logdir = 'logs'
 
-params.bam="$params.bamdir/*.bam"
+//params.bam="$params.bamdir/*.bam"
 
 
 log.info """\
