@@ -139,7 +139,7 @@ process espresso {
     """
     mkdir ${smpl_id}
 
-    echo "\$bamfile\t\$smpl_id" >>sample_sheet.tsv
+    echo "${bamfile}\t${smpl_id}" >>sample_sheet.tsv
 
     perl /espresso/src/ESPRESSO_S.pl -L sample_sheet.tsv -T ${task.cpus} --sort_buffer_size ${task.memory} -F ${params.refFa} -A ${params.refGTF} -O ${smpl_id}
 
