@@ -3,7 +3,7 @@
 
 #nextflow
 .nextflow
-.nextflow.log
+.nextflow.lo*
 
 #git
 .git
