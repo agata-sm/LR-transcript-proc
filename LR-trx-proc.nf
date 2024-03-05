@@ -77,7 +77,7 @@ workflow {
 	//espresso
 	espresso(smpls_ch)
 	espresso_out_ch=espresso.out.espresso_gtf_ch
-	espresso_merge(esprsso_out_ch.collect())
+	espresso_merge(espresso_out_ch.collect())
 	gffcompare_espresso(espresso_merge.out.espresso_merged_ch)
 
 }
