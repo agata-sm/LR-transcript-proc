@@ -97,6 +97,11 @@ process gffcompare_stringtie {
 
     output:
     path("gffcompare_stringtie.stats")
+    path("gffcompare_stringtie.annotated.gtf")
+    path("gffcompare_stringtie.loci")
+    path("gffcompare_stringtie.loci.${params.projname}.stringtie.merged.gtf.refmap")
+    path("gffcompare_stringtie.loci.${params.projname}.stringtie.merged.gtf.tmap")
+
 
     script:
     """
@@ -111,6 +116,7 @@ process gffcompare_stringtie {
     """
 
 }
+
 
 
 process espresso {
@@ -197,13 +203,17 @@ process gffcompare_espresso {
 
     output:
     path("gffcompare_espresso.stats")
+    path("gffcompare_espresso.annotated.gtf")
+    path("gffcompare_espresso.loci")
+    path("gffcompare_espresso.loci.${params.projname}.espresso.merged.gtf.refmap")
+    path("gffcompare_espresso.loci.${params.projname}.espresso.merged.gtf.tmap")
 
 
     script:
     """
     echo ${espresso_merged}
 
-    gffcompare -R -r ${params.refGTF} -o gffcompare_espresso $stringtie_merged
+    gffcompare -R -r ${params.refGTF} -o gffcompare_espresso $espresso_merged
     
     date >>${params.verfile}
     echo "gffcompare" >>${params.verfile}
