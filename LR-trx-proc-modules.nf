@@ -122,7 +122,7 @@ process gffcompare_stringtie {
 process espresso {
     publishDir params.espOut, mode:'copy'
 
-    label 'mid_mem'
+    label 'big_mem'
 
     input:
     tuple path(bamfile), val(smpl_id)
