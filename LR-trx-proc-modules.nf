@@ -96,20 +96,13 @@ process gffcompare_stringtie {
     path stringtie_merged
 
     output:
-    path("${params.projname}.stringtie.merged.gffcompare.annotated.gtf")
-    path("${params.projname}.stringtie.merged.gffcompare.merged.gtf.tmap")
-    path("${params.projname}.stringtie.merged.gffcompare.merged.gtf.tmap")
-    path("${params.projname}.stringtie.merged.gffcompare.merged.cmp.loci")
-    path("${params.projname}.stringtie.merged.gffcompare.merged.gtf.stats")
-    path("${params.projname}.stringtie.merged.gffcompare.merged.gtf.tracking")
-    path("${params.projname}.stringtie.merged.gffcompare.merged.gtf.refmap")
-
+    path("gffcompare_stringtie.stats")
 
     script:
     """
     echo ${stringtie_merged}
 
-    gffcompare -R -r ${params.refGTF} -o ${params.projname}.stringtie.merged.gffcompare $stringtie_merged
+    gffcompare -R -r ${params.refGTF} -o gffcompare_stringtie $stringtie_merged
     
     date >>${params.verfile}
     echo "gffcompare" >>${params.verfile}
@@ -203,20 +196,14 @@ process gffcompare_espresso {
     path espresso_merged
 
     output:
-    path("${params.projname}.espresso.merged.gffcompare.annotated.gtf")
-    path("${params.projname}.espresso.merged.gffcompare.merged.gtf.tmap")
-    path("${params.projname}.espresso.merged.gffcompare.merged.gtf.tmap")
-    path("${params.projname}.espresso.merged.gffcompare.merged.cmp.loci")
-    path("${params.projname}.espresso.merged.gffcompare.merged.gtf.stats")
-    path("${params.projname}.espresso.merged.gffcompare.merged.gtf.tracking")
-    path("${params.projname}.espresso.merged.gffcompare.merged.gtf.refmap")
+    path("gffcompare_espresso.stats")
 
 
     script:
     """
     echo ${espresso_merged}
 
-    gffcompare -R -r ${params.refGTF} -o ${params.projname}.espresso.merged.gffcompare $espresso_merged
+    gffcompare -R -r ${params.refGTF} -o gffcompare_espresso $stringtie_merged
     
     date >>${params.verfile}
     echo "gffcompare" >>${params.verfile}
@@ -225,5 +212,6 @@ process gffcompare_espresso {
     """
 
 }
+
 
 
