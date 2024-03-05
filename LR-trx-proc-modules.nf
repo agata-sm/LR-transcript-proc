@@ -99,8 +99,8 @@ process gffcompare_stringtie {
     path("gffcompare_stringtie.stats")
     path("gffcompare_stringtie.annotated.gtf")
     path("gffcompare_stringtie.loci")
-    path("gffcompare_stringtie.loci.${params.projname}.stringtie.merged.gtf.refmap")
-    path("gffcompare_stringtie.loci.${params.projname}.stringtie.merged.gtf.tmap")
+    path("gffcompare_stringtie.${params.projname}.stringtie.merged.gtf.refmap")
+    path("gffcompare_stringtie.${params.projname}.stringtie.merged.gtf.tmap")
 
 
     script:
@@ -205,8 +205,8 @@ process gffcompare_espresso {
     path("gffcompare_espresso.stats")
     path("gffcompare_espresso.annotated.gtf")
     path("gffcompare_espresso.loci")
-    path("gffcompare_espresso.loci.${params.projname}.espresso.merged.gtf.refmap")
-    path("gffcompare_espresso.loci.${params.projname}.espresso.merged.gtf.tmap")
+    path("gffcompare_espresso.${params.projname}.espresso.merged.gtf.refmap")
+    path("gffcompare_espresso.${params.projname}.espresso.merged.gtf.tmap")
 
 
     script:
