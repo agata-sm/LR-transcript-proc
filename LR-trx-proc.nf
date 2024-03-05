@@ -24,15 +24,11 @@ params.outdir = "${params.projdir}/${params.resdir}"
 
 params.logdir = 'logs'
 
-//params.bam="$params.bamdir/*.bam"
-
 
 log.info """\
  LONG READ TRANSCRIPTOME ANALYSIS - N F   P I P E L I N E
  ===================================
  
- bam files directory: ${params.bamdir}
-
  sample sheet: ${params.samplesheet}
 
  outdir       : ${params.outdir}
@@ -46,8 +42,6 @@ println ""
 
 ///////////////////////////
 //channels
-
-//println "bam files and samples"
 
 //samples channel
 smpls_ch= Channel.fromPath(params.samplesheet, checkIfExists:true)
