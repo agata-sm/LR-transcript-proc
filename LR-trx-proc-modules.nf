@@ -13,6 +13,12 @@ params.stGffCmpOut="${params.outdir}/${params.stm_gffcmp}"
 params.esp="ESPRESSO"
 params.espOut="${params.outdir}/${params.esp}"
 
+params.espm="espresso_merge"
+params.espmOut="${params.outdir}/${params.espm}"
+
+params.espm_gffcmp="espresso_gff_compare"
+params.espGffCmpOut="${params.outdir}/${params.espm_gffcmp}"
+
 
 
 
@@ -61,14 +67,14 @@ process stringtie_merge {
     label 'mid_mem'
 
     input:
-    path stringie_gtfs
+    path stringtie_gtfs
 
     output:
     path("${params.projname}.stringtie.merged.gtf"), emit: stringtie_merged_ch
 
     script:
     """
-    echo $stringie_gtfs
+    echo ${stringtie_gtfs}
 
     stringtie --merge ${stringtie_gtfs}  -G ${params.refGTF} -o ${params.projname}.stringtie.merged.gtf
 
@@ -101,7 +107,7 @@ process gffcompare_stringtie {
 
     script:
     """
-    echo $stringtie_merged
+    echo ${stringtie_merged}
 
     gffcompare -R -r ${params.refGTF} -o ${params.projname}.stringtie.merged.gffcompare $stringtie_merged
     
@@ -126,7 +132,7 @@ process espresso {
     path "${smpl_id}/espresso_s_summary.txt"
     path "${smpl_id}/SJ_group_all.fa"
     path "${smpl_id}/*abundance.esp"
-    path "${smpl_id}/*updated.gtf"
+    path "${smpl_id}/*updated.gtf", emit: espresso_gtf_ch
     path "${smpl_id}/1_SJ_simplified.list"
     path "${smpl_id}/espresso_q_summary.txt"
     path "${smpl_id}/0/1_read_final.txt"
@@ -162,7 +168,62 @@ process espresso {
 }
 
 
+process espresso_merge {
+    publishDir params.espmOut, mode:'copy'
+
+    label 'mid_mem'
+
+    input:
+    path espresso_gtfs
+
+    output:
+    path("${params.projname}.espresso.merged.gtf"), emit: espresso_merged_ch
+
+    script:
+    """
+    echo ${espresso_gtfs}
+
+    stringtie --merge ${espresso_gtfs}  -G ${params.refGTF} -o ${params.projname}.espresso.merged.gtf
+
+    date >>${params.verfile}
+    echo "stringtie" >>${params.verfile}
+    stringtie --version >>${params.verfile}
+    echo "" >>${params.verfile}
+    """
+
+}
 
 
+process gffcompare_espresso {
+    publishDir params.espGffCmpOut, mode:'copy'
+
+    label 'small'
+
+    input:
+    path espresso_merged
+
+    output:
+    path("${params.projname}.espresso.merged.gffcompare.annotated.gtf")
+    path("${params.projname}.espresso.merged.gffcompare.merged.gtf.tmap")
+    path("${params.projname}.espresso.merged.gffcompare.merged.gtf.tmap")
+    path("${params.projname}.espresso.merged.gffcompare.merged.cmp.loci")
+    path("${params.projname}.espresso.merged.gffcompare.merged.gtf.stats")
+    path("${params.projname}.espresso.merged.gffcompare.merged.gtf.tracking")
+    path("${params.projname}.espresso.merged.gffcompare.merged.gtf.refmap")
+
+
+    script:
+    """
+    echo ${espresso_merged}
+
+    gffcompare -R -r ${params.refGTF} -o ${params.projname}.espresso.merged.gffcompare $espresso_merged
+    
+    date >>${params.verfile}
+    echo "gffcompare" >>${params.verfile}
+    gffcompare --version >>${params.verfile}
+    echo "" >>${params.verfile}
+    """
+
+}
 
 
