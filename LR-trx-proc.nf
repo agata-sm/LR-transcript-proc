@@ -57,7 +57,7 @@ println ""
 
 /////////////////////////////
 // processes
-include { stringtie; espresso; stringtie_merge; gffcompare_stringtie; espresso_merge; espresso_stringtie } from './LR-trx-proc-modules.nf'
+include { stringtie; espresso; stringtie_merge; gffcompare_stringtie; espresso_merge; gffcompare_espresso} from './LR-trx-proc-modules.nf'
 
 
 
