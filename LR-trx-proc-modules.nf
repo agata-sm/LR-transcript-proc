@@ -131,13 +131,14 @@ process espresso {
     path "${smpl_id}/espresso_s_summary.txt"
     path "${smpl_id}/SJ_group_all.fa"
     path "${smpl_id}/*abundance.esp"
-    path "${smpl_id}/*updated.gtf", emit: espresso_gtf_ch
+    path "${smpl_id}/*updated.gtf"
     path "${smpl_id}/1_SJ_simplified.list"
     path "${smpl_id}/espresso_q_summary.txt"
     path "${smpl_id}/0/1_read_final.txt"
     path "${smpl_id}/0/espresso_c_summary.txt"
     path "${smpl_id}/0/sam.list3"
     path "${smpl_id}/0/sj.list"
+    path "${smpl_id}/${smpl_id}.espresso.updated.gtf", emit: espresso_gtf_ch
 
 
     script:
@@ -154,6 +155,7 @@ process espresso {
     perl /espresso/src/ESPRESSO_C.pl -I ${smpl_id} -F ${params.refFa} -X 0 -T ${params.espresso_cpus} --sort_buffer_size ${params.espresso_mem}
     perl /espresso/src/ESPRESSO_Q.pl -L "${smpl_id}/sample_sheet.tsv.updated" -A ${params.refGTF} -T ${params.espresso_cpus}
 
+    cp ${smpl_id}/*updated.gtf ${smpl_id}/${smpl_id}.espresso.updated.gtf 
 
     date >>${params.verfile}
     echo "ESPRESSO" >>${params.verfile}
