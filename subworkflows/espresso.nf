@@ -4,7 +4,7 @@ takes bam files and runs ESPRESSO (DOI: 10.1126/sciadv.abq5072, https://github.c
 */
 
 
-params.espressoOut="${params.out_dir}/espresso"
+params.espressoOut="${params.outdir}/espresso"
 params.scriptDir="${projectDir}/bin"
 
 params.espressoOutS="${params.espressoOut}/S"
