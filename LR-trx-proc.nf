@@ -40,6 +40,14 @@ println ""
 println ""
 println ""
 
+
+/////////////////////////////
+// processes
+include { stringtie; espresso_run; stringtie_merge; gffcompare_stringtie; espresso_merge; gffcompare_espresso} from './LR-trx-proc-modules.nf'
+include {espresso} from './subworkflows/espresso.nf'
+
+
+
 ///////////////////////////
 //channels
 
@@ -52,12 +60,6 @@ smpls_ch= Channel.fromPath(params.samplesheet, checkIfExists:true)
 	    .set { smpls_ch }
 
 println ""
-
-
-
-/////////////////////////////
-// processes
-include { stringtie; espresso; stringtie_merge; gffcompare_stringtie; espresso_merge; gffcompare_espresso} from './LR-trx-proc-modules.nf'
 
 
 
@@ -75,10 +77,13 @@ workflow {
 	gffcompare_stringtie(stringtie_merge.out.stringtie_merged_ch)
 
 	//espresso
+	//espresso(smpls_ch)
+	//espresso_out_ch=espresso.out.espresso_gtf_ch
+	//espresso_merge(espresso_out_ch.collect())
+	//gffcompare_espresso(espresso_merge.out.espresso_merged_ch)
+
+	//espresso the right way
 	espresso(smpls_ch)
-	espresso_out_ch=espresso.out.espresso_gtf_ch
-	espresso_merge(espresso_out_ch.collect())
-	gffcompare_espresso(espresso_merge.out.espresso_merged_ch)
 
 }
 

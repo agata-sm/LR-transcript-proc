@@ -31,13 +31,19 @@ params.espGffCmpOut="${params.outdir}/${params.espm_gffcmp}"
 params.scripts="${projectDir}/bin"
 
 // versions
-params.verfile="software.versions"
+params.verfile="versions.txt"
 
 /// modules
 
 
 process stringtie {
-    publishDir params.stOut, mode:'copy'
+    publishDir params.stOut, mode:'copy',
+    saveAs: {filename ->
+        if (filename.endsWith(".gtf")) "$filename"
+        else if (filename.endsWith(".txt")) "$filename"
+        else null
+    }
+
 
     label 'mid_mem'
 
@@ -45,19 +51,17 @@ process stringtie {
     tuple path(bamfile), val(smpl_id)
 
     output:
-    path("${smpl_id}.stringtie.gtf"), emit: stringtie_gtf_ch
+    path("*.gtf"), emit: stringtie_gtf_ch
+    path "versions.txt"
 
     script:
     """
-    echo $bamfile
-    echo $smpl_id
-    
     stringtie $bamfile --rf -L -p ${task.cpus} -v -G ${params.refGTF} >${smpl_id}.stringtie.gtf
 
-    cat <<-END_VERSIONS > versions.txt
+    cat <<-END_VERSIONS > ${params.verfile}
     Software versions for LR-trx-proc.nf
     \$( date )
-    process **  stringtie **
+    process ** stringtie **
     stringtie
     \$( stringtie --version )
     END_VERSIONS
@@ -79,8 +83,6 @@ process stringtie_merge {
 
     script:
     """
-    echo ${stringtie_gtfs}
-
     stringtie --merge ${stringtie_gtfs}  -G ${params.refGTF} -o ${params.projname}.stringtie.merged.gtf
 
     date >>${params.verfile}
@@ -110,11 +112,9 @@ process gffcompare_stringtie {
 
     script:
     """
-    echo ${stringtie_merged}
-
     gffcompare -R -r ${params.refGTF} -o gffcompare_stringtie $stringtie_merged
     
-    cat <<-END_VERSIONS > versions.txt
+    cat <<-END_VERSIONS > ${params.verfile}
     Software versions for LR-trx-proc.nf
     \$( date )
     process **  gffcompare_stringtie **
@@ -127,7 +127,7 @@ process gffcompare_stringtie {
 
 
 
-process espresso {
+process espresso_run {
     publishDir params.espOut, mode:'copy'
 
     label 'big_mem'
@@ -190,8 +190,6 @@ process espresso_merge {
 
     script:
     """
-    echo ${espresso_gtfs}
-
     stringtie --merge ${espresso_gtfs}  -G ${params.refGTF} -o ${params.projname}.espresso.merged.gtf
 
     date >>${params.verfile}
@@ -221,8 +219,6 @@ process gffcompare_espresso {
 
     script:
     """
-    echo ${espresso_merged}
-
     gffcompare -R -r ${params.refGTF} -o gffcompare_espresso $espresso_merged
     
     date >>${params.verfile}
@@ -232,6 +228,4 @@ process gffcompare_espresso {
     """
 
 }
-
-
 
