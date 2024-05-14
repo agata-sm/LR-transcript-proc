@@ -89,7 +89,7 @@ workflow {
 	mapped_genome_ch=map_genome.out.mapped_genome_ch
 		.toList()
 		.view()
-	espresso(mapped_genome_ch.collect())
+	espresso(mapped_genome_ch.collect(flat: false))
 
 }
 
