@@ -51,10 +51,10 @@ process espresso_s {
 
 workflow espresso {
     take:
-       smpls_ch
+       mapped_ch
 
     main:
-    	espresso_s(smpls_ch)
+    	espresso_s(mapped_ch)
 
 }
 
