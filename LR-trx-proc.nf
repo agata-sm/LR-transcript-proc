@@ -43,7 +43,7 @@ println ""
 
 /////////////////////////////
 // processes
-include { stringtie; espresso_run; stringtie_merge; gffcompare_stringtie; espresso_merge; gffcompare_espresso} from './LR-trx-proc-modules.nf'
+include { stringtie; espresso_run; stringtie_merge; gffcompare_stringtie; espresso_merge; gffcompare_espresso; map_genome} from './LR-trx-proc-modules.nf'
 include {espresso} from './subworkflows/espresso.nf'
 
 
@@ -82,8 +82,12 @@ workflow {
 	//espresso_merge(espresso_out_ch.collect())
 	//gffcompare_espresso(espresso_merge.out.espresso_merged_ch)
 
+	//mock process atm but later it will actually map reads to genome
+	map_genome(smpls_ch)
+
 	//espresso the right way
-	espresso(smpls_ch)
+	mapped_genome_ch=map_genome.out.mapped_genome_ch
+	espresso(mapped_genome_ch.collect())
 
 }
 

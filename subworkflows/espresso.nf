@@ -16,6 +16,7 @@ process espresso_s {
     saveAs: {filename ->
         if (filename.endsWith(".gtf")) "$filename"
         else if (filename.endsWith(".tsv")) "$filename"
+        else if (filename.endsWith(".txt")) "$filename"
         else null
     }
 
@@ -36,7 +37,7 @@ process espresso_s {
     #perl /espresso/src/ESPRESSO_S.pl -M M -L sample_sheet.tsv -T ${params.espresso_cpus} --sort_buffer_size ${params.espresso_mem} -F ${params.refFa} -A ${params.refGTF} -O ${smpl_id}
 
 
-    cat <<-END_VERSIONS > ${params.verfile}
+    cat <<-END_VERSIONS > versions.txt
     Software versions for LR-trx-proc.nf
     \$( date )
     process ** espresso_s **

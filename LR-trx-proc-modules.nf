@@ -58,7 +58,7 @@ process stringtie {
     """
     stringtie $bamfile --rf -L -p ${task.cpus} -v -G ${params.refGTF} >${smpl_id}.stringtie.gtf
 
-    cat <<-END_VERSIONS > ${params.verfile}
+    cat <<-END_VERSIONS > versions.txt
     Software versions for LR-trx-proc.nf
     \$( date )
     process ** stringtie **
@@ -114,7 +114,7 @@ process gffcompare_stringtie {
     """
     gffcompare -R -r ${params.refGTF} -o gffcompare_stringtie $stringtie_merged
     
-    cat <<-END_VERSIONS > ${params.verfile}
+    cat <<-END_VERSIONS > versions.txt
     Software versions for LR-trx-proc.nf
     \$( date )
     process **  gffcompare_stringtie **
@@ -229,3 +229,21 @@ process gffcompare_espresso {
 
 }
 
+
+process map_genome {
+
+    label 'small'
+
+    input:
+    tuple path(bamfile), val(smpl_id)
+
+    output:
+    tuple path(bamfile), val(smpl_id), emit: mapped_genome_ch
+
+    script:
+    """
+    touch ${bamfile}
+    """
+
+
+}
