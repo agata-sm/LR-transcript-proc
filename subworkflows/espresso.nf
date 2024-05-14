@@ -25,7 +25,7 @@ process espresso_s {
     tuple path(bamfile), val(smpl_id)
 
     output:
-    path("*.tsv"), emit: stringtie_gtf_ch
+    path("*.tsv")
     path "versions.txt"
 
     script:
@@ -44,6 +44,16 @@ process espresso_s {
     \$(  perl /espresso/src/ESPRESSO_S.pl --help | head -n 5 )
     END_VERSIONS
     """
+
+}
+
+
+workflow espresso {
+    take:
+       smpls_ch
+
+    main:
+    	espresso_s(smpls_ch)
 
 }
 
