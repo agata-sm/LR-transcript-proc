@@ -1,4 +1,4 @@
-// modules for minimal.nf
+// modules for LR-trx-proc.nf
 
 
 params.st="stringtie"
@@ -18,6 +18,7 @@ params.espmOut="${params.outdir}/${params.espm}"
 
 params.espm_gffcmp="espresso_gff_compare"
 params.espGffCmpOut="${params.outdir}/${params.espm_gffcmp}"
+
 
 
 
@@ -53,13 +54,17 @@ process stringtie {
     
     stringtie $bamfile --rf -L -p ${task.cpus} -v -G ${params.refGTF} >${smpl_id}.stringtie.gtf
 
-    date >>${params.verfile}
-    echo "stringtie" >>${params.verfile}
-    stringtie --version >>${params.verfile}
-    echo "" >>${params.verfile}
+    cat <<-END_VERSIONS > versions.txt
+    Software versions for LR-trx-proc.nf
+    \$( date )
+    process **  stringtie **
+    stringtie
+    \$( stringtie --version )
+    END_VERSIONS
     """
 
 }
+
 
 process stringtie_merge {
     publishDir params.stmOut, mode:'copy'
@@ -109,10 +114,13 @@ process gffcompare_stringtie {
 
     gffcompare -R -r ${params.refGTF} -o gffcompare_stringtie $stringtie_merged
     
-    date >>${params.verfile}
-    echo "gffcompare" >>${params.verfile}
-    gffcompare --version >>${params.verfile}
-    echo "" >>${params.verfile}
+    cat <<-END_VERSIONS > versions.txt
+    Software versions for LR-trx-proc.nf
+    \$( date )
+    process **  gffcompare_stringtie **
+    gffcompare
+    \$( gffcompare --version )
+    END_VERSIONS
     """
 
 }

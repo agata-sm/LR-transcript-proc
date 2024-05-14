@@ -6,7 +6,7 @@
  * Nextflow DSL2
  * 
  * Author: Agata Smialowska
- * January 2024
+ * January - May 2024
  */ 
 
 
