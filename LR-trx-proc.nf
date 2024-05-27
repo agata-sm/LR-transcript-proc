@@ -43,9 +43,9 @@ println ""
 
 /////////////////////////////
 // processes
-include { stringtie; espresso_run; stringtie_merge; gffcompare_stringtie; espresso_merge; gffcompare_espresso; map_genome} from './LR-trx-proc-modules.nf'
-include {espresso} from './subworkflows/espresso.nf'
+//include { stringtie; espresso_run; stringtie_merge; gffcompare_stringtie; espresso_merge; gffcompare_espresso; map_genome} from './LR-trx-proc-modules.nf'
 
+include { map_genome; stringtie; espresso_run; stringtie_merge; gffcompare_stringtie; espresso_merge; gffcompare_espresso; espresso_s_input; espresso_c_smpl; espresso_q_input} from './LR-trx-proc-modules.nf'
 
 
 ///////////////////////////
@@ -87,9 +87,23 @@ workflow {
 
 	//espresso the right way
 	mapped_genome_ch=map_genome.out.mapped_genome_ch
-		.toList()
-		.view()
-	espresso(mapped_genome_ch.collect(flat: false))
+		.collect()
+
+	// ESPRESSO
+	espresso_s_input(mapped_genome_ch)
+	espresso_s_out_ch=espresso_s_input.out.espresso_s_out_ch
+
+	// map sample ID to espresso S index
+	sample_idx_ch= espresso_s_input.out.espresso_s_samplesheet_ch
+	sample_idx_ch
+		    .splitCsv(header:false, sep: '\t', strip: true)
+		    //.view( row-> "${row[1]}, ${row[2]}" )
+		    .map{ row -> tuple( "${row[1]}","${row[2]}") }
+		    .set { sample_idx_ch }
+
+	espresso_c_smpl(sample_idx_ch, espresso_s_out_ch)
+	espresso_c_for_q_ch=espresso_c_smpl.out.espresso_c_smpl_ch
+	espresso_q_input(espresso_c_for_q_ch.collect(),espresso_s_input.out.espresso_s_samplesheet_ch)
 
 }
 
