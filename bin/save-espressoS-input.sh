@@ -1,5 +1,8 @@
  #!/usr/bin/env bash
 
+let no_args=$#
+
+
 declare -r -A array1
 
 
