@@ -261,7 +261,7 @@ process espresso_s_input {
         else if (filename.endsWith(".txt")) "$filename"
     }
 
-    label 'espressoS'
+    label 'espresso'
 
     input:
     val(args)
@@ -292,7 +292,7 @@ process espresso_c_smpl {
     }
 
 
-    label 'espressoC'
+    label 'espresso'
 
 
     input:
@@ -324,7 +324,7 @@ process espresso_q_input {
     }
 
 
-    label 'espressoQ'
+    label 'espresso'
 
 
     input:
