@@ -309,7 +309,7 @@ process espresso_c_smpl {
 
     perl /espresso/src/ESPRESSO_C.pl -I ESPRESSO_S -T ${params.espresso_threads} --sort_buffer_size ${params.espresso_mem} -F ${params.refFa} -X ${smpl_idx}
 
-    cp "${smpl_idx}/espresso_c_summary.txt" "${smpl_id}.espresso_c_summary.txt"
+    cp "ESPRESSO_S/${smpl_idx}/espresso_c_summary.txt" "${smpl_id}.espresso_c_summary.txt"
     """
 
 }
