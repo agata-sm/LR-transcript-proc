@@ -1,9 +1,13 @@
  #!/usr/bin/env bash
 
+echo "cmdline args"
+echo "${[@]}"
+
+
 let no_args=$#
 
 
-declare -r -A array1
+declare -a array1
 
 
 for var in "$@"
@@ -17,8 +21,6 @@ do
 done
 
 
-
-declare -r -A array2
 
 idx=0
 
