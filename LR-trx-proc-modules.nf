@@ -300,16 +300,18 @@ process espresso_c_smpl {
     path espresso_s_out_ch
 
     output:
-    path smpl_idx, emit: espresso_c_smpl_ch
+    path "espressoS/${smpl_idx}", emit: espresso_c_smpl_ch
     path "${smpl_id}.espresso_c_summary.txt"
 
 
     script:
     """
+    cp -r ESPRESSO_S espressoS ## to isolate the execution process
 
-    perl /espresso/src/ESPRESSO_C.pl -I ESPRESSO_S -T ${params.espresso_threads} --sort_buffer_size ${params.espresso_mem} -F ${params.refFa} -X ${smpl_idx}
+    perl /espresso/src/ESPRESSO_C.pl -I espressoS -T ${params.espresso_threads} --sort_buffer_size ${params.espresso_mem} -F ${params.refFa} -X ${smpl_idx}
 
-    cp "ESPRESSO_S/${smpl_idx}/espresso_c_summary.txt" "${smpl_id}.espresso_c_summary.txt"
+
+    cp "espressoS/${smpl_idx}/espresso_c_summary.txt" "${smpl_id}.espresso_c_summary.txt"
     """
 
 }
@@ -337,7 +339,7 @@ process espresso_q_input {
 
     script:
     """
-    perl /espresso/src/ESPRESSO_Q.pl  -L sample_sheet.tsv.updated  -A ${gene_models_gff} -T ${params.espresso_threads} -O .
+    perl /espresso/src/ESPRESSO_Q.pl  -L sample_sheet.tsv.updated  -A ${params.refGTF} -T ${params.espresso_threads} -O .
     """
 
 
