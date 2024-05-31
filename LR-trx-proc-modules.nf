@@ -93,7 +93,7 @@ process genome_idx {
 
     script:
     """
-    minimap2 -t ${params.threads_mid_mem} ${params.minimap_index_opts} -I 1000G -d genome.minimap.idx.mmi ${genome_ch}"
+    minimap2 -t ${params.threads_mid_mem} ${params.minimap_index_opts} -I 1000G -d genome.minimap.idx.mmi ${genome_ch}
     """
 }
 
