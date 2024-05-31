@@ -58,6 +58,12 @@ smpls_ch= Channel.fromPath(params.samplesheet, checkIfExists:true)
 
 println ""
 
+//genome fa channel
+genome_ch= Channel.fromPath(params.refFa, checkIfExists:true)
+
+println ""
+
+
 
 
 /////////////////////////////
