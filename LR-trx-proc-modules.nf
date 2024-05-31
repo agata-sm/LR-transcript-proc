@@ -84,6 +84,7 @@ process preprocess_reads {
 process genome_idx {
 
     label 'mid_mem'
+    label 'wftrx'
 
     input:
     path genome_ch
@@ -108,6 +109,7 @@ process map_genome {
 
 
     label 'mid_mem'
+    label 'wftrx'
 
     input:
     tuple path(fastq_proc), val(smpl_id)
