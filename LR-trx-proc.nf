@@ -2,7 +2,7 @@
 
 
 /* 
- * pipeline for analysis of LR transcriptomics data processed by wf-transcriptomes (tested with our adapted fork)
+ * pipeline for analysis of ONT LR transcriptomics data (cDNA-seq)
  * Nextflow DSL2
  * 
  * Author: Agata Smialowska
@@ -18,11 +18,8 @@ params.pipelinename="LR transcriptomics analysis pipeline"
  * pipeline input parameters 
  */
 params.resdir = "results"
-params.projdir = "$launchDir/${params.projname}"
-
+params.projdir = "${launchDir}/${params.projname}"
 params.outdir = "${params.projdir}/${params.resdir}"
-
-params.logdir = 'logs'
 
 
 log.info """\
@@ -45,7 +42,7 @@ println ""
 // processes
 //include { stringtie; espresso_run; stringtie_merge; gffcompare_stringtie; espresso_merge; gffcompare_espresso; map_genome} from './LR-trx-proc-modules.nf'
 
-include { map_genome; stringtie; espresso_run; stringtie_merge; gffcompare_stringtie; espresso_merge; gffcompare_espresso; espresso_s_input; espresso_c_smpl; espresso_q_input} from './LR-trx-proc-modules.nf'
+include { preprocess_reads; genome_idx; map_genome; stringtie; stringtie_merge; gffcompare_stringtie; gffcompare_espresso; espresso_s_input; espresso_c_smpl; espresso_q_input} from './LR-trx-proc-modules.nf'
 
 
 ///////////////////////////
@@ -70,8 +67,17 @@ println ""
 
 workflow {
 
+	//cat fastq files and preprocess using pychopper
+	preprocess_reads(smpls_ch)
+	full_len_reads_ch=preprocess_reads.out.full_len_reads
+
+	//minimap2
+	genome_idx(genome_ch)
+	map_genome(full_len_reads_ch,genome_idx.out.genome_idx_ch)
+
+
 	//stringtie
-	stringtie(smpls_ch)
+	stringtie(map_genome.out.mapped_genome_ch)
 	stringtie_out_ch=stringtie.out.stringtie_gtf_ch
 	stringtie_merge(stringtie_out_ch.collect())
 	gffcompare_stringtie(stringtie_merge.out.stringtie_merged_ch)
@@ -83,14 +89,14 @@ workflow {
 	//gffcompare_espresso(espresso_merge.out.espresso_merged_ch)
 
 	//mock process atm but later it will actually map reads to genome
-	map_genome(smpls_ch)
+	//map_genome(smpls_ch)
 
 	//espresso the right way
-	mapped_genome_ch=map_genome.out.mapped_genome_ch
+	mapped_genome_all_ch=map_genome.out.mapped_genome_ch
 		.collect()
 
 	// ESPRESSO
-	espresso_s_input(mapped_genome_ch)
+	espresso_s_input(mapped_genome_all_ch)
 	espresso_s_out_ch=espresso_s_input.out.espresso_s_out_ch
 
 	// map sample ID to espresso S index
@@ -104,6 +110,13 @@ workflow {
 	espresso_c_smpl(sample_idx_ch, espresso_s_out_ch)
 	espresso_c_for_q_ch=espresso_c_smpl.out.espresso_c_smpl_ch
 	espresso_q_input(espresso_c_for_q_ch.collect(),espresso_s_input.out.espresso_s_samplesheet_ch)
+
+	gffcompare_espresso(espresso_q_input.out.espresso_gtf_ch)
+
+
+	// SQANTI
+
+
 
 }
 
