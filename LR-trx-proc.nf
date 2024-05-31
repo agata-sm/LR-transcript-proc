@@ -48,18 +48,25 @@ include { preprocess_reads; genome_idx; map_genome; stringtie; stringtie_merge; 
 ///////////////////////////
 //channels
 
+println ""
+
+println "Sample paths"
+
 //samples channel
 smpls_ch= Channel.fromPath(params.samplesheet, checkIfExists:true)
 	smpls_ch
 	    .splitCsv(header:true, sep: '\t', strip: true)
 	    .map{ row-> tuple(row.path, row.sample) }
-	    //.view()
+	    .view()
 	    .set { smpls_ch }
 
 println ""
 
+println "Genome reference"
+
 //genome fa channel
 genome_ch= Channel.fromPath(params.refFa, checkIfExists:true)
+	.view()
 
 println ""
 
