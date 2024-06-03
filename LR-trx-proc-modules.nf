@@ -121,7 +121,7 @@ process map_genome {
 
     script:
     """
-    minimap2 -t ${params.threads_mid_mem} -ax splice -uf ${genome_idx_ch} ${fastq_proc} | samtools view -hbo -| samtools sort -@ ${params.threads_mid_mem} -o ${smpl_id}_all_alns.minimap2.bam - "
+    minimap2 -t ${params.threads_mid_mem} -ax splice -uf ${genome_idx_ch} ${fastq_proc} | samtools view -hbo -| samtools sort -@ ${params.threads_mid_mem} -o ${smpl_id}_all_alns.minimap2.bam -
 
     samtools index ${smpl_id}_all_alns.minimap2.bam
 
