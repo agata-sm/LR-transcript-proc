@@ -52,8 +52,9 @@ process preprocess_reads {
     }
 
 
-
     label 'wftrx'
+
+    tag {smpl_id}
 
     input:
     tuple path(path2fastq), val(smpl_id)
@@ -94,7 +95,7 @@ process genome_idx {
 
     script:
     """
-    minimap2 -t ${params.threads_mid_mem} ${params.minimap_index_opts} -I 1000G -d genome.minimap.idx.mmi ${genome_ch}
+    minimap2 -t ${params.threads_mid_mem} ${params.minimap_index_opts} -I 1000G -d "genome.minimap.idx.mmi" ${genome_ch}
     """
 }
 
@@ -111,9 +112,10 @@ process map_genome {
     label 'mid_mem'
     label 'wftrx'
 
+    tag {smpl_id}
+
     input:
-    tuple path(fastq_proc), val(smpl_id)
-    path genome_idx_ch
+    tuple path(fastq_proc), val(smpl_id), path(genome_idx_ch)
 
     output:
     tuple path("${smpl_id}_all_alns.minimap2.bam"), val(smpl_id), emit: mapped_genome_ch
@@ -153,6 +155,8 @@ process stringtie {
 
 
     label 'mid_mem'
+
+    tag {smpl_id}
 
     input:
     tuple path(bamfile), val(smpl_id)
@@ -395,6 +399,7 @@ process espresso_c_smpl {
 
     label 'espressoC'
 
+    tag {smpl_id}
 
     input:
     tuple val(smpl_id), val(smpl_idx)

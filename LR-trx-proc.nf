@@ -52,6 +52,7 @@ println ""
 
 println "Sample paths"
 
+
 //samples channel
 smpls_ch= Channel.fromPath(params.samplesheet, checkIfExists:true)
 	smpls_ch
@@ -82,27 +83,21 @@ workflow {
 
 	//cat fastq files and preprocess using pychopper
 	preprocess_reads(smpls_ch)
-	full_len_reads_ch=preprocess_reads.out.full_len_reads
 
 	//minimap2
 	genome_idx(genome_ch)
-	map_genome(full_len_reads_ch,genome_idx.out.genome_idx_ch)
 
+	full_len_reads_map_ch=preprocess_reads.out.full_len_reads
+	full_len_reads_map_ch
+			.combine(genome_idx.out.genome_idx_ch)
+			.set {full_len_reads_map_ch}
+	map_genome(full_len_reads_map_ch)
 
 	//stringtie
 	stringtie(map_genome.out.mapped_genome_ch)
 	stringtie_out_ch=stringtie.out.stringtie_gtf_ch
 	stringtie_merge(stringtie_out_ch.collect())
 	gffcompare_stringtie(stringtie_merge.out.stringtie_merged_ch)
-
-	//espresso
-	//espresso(smpls_ch)
-	//espresso_out_ch=espresso.out.espresso_gtf_ch
-	//espresso_merge(espresso_out_ch.collect())
-	//gffcompare_espresso(espresso_merge.out.espresso_merged_ch)
-
-	//mock process atm but later it will actually map reads to genome
-	//map_genome(smpls_ch)
 
 	//espresso the right way
 	mapped_genome_all_ch=map_genome.out.mapped_genome_ch
@@ -116,7 +111,6 @@ workflow {
 	sample_idx_ch= espresso_s_input.out.espresso_s_samplesheet_ch
 	sample_idx_ch
 		    .splitCsv(header:false, sep: '\t', strip: true)
-		    //.view( row-> "${row[1]}, ${row[2]}" )
 		    .map{ row -> tuple( "${row[1]}","${row[2]}") }
 		    .set { sample_idx_ch }
 
