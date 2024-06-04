@@ -43,7 +43,12 @@ params.verfile="versions.txt"
 process preprocess_reads {
     /*
     Concatenate reads from a sample directory.
-    Optionally classify, trim, and orient cDNA reads using pychopper
+    Classify, trim, and orient cDNA reads using pychopper
+    
+    WORK IN PROGRESS:
+    When new pychopper + pigz container is available use pigz multithreaded compression - hence saving uncompressed file at the moment
+    
+    parametrise the extension of fastq files in input
     */
 
     publishDir params.readsPreprocOut, mode:'copy',
@@ -63,10 +68,18 @@ process preprocess_reads {
     tuple path("${smpl_id}_full_length_reads.fastq.gz"), val("${smpl_id}"), emit: full_len_reads
 
     script:
-    """
-    #pychopper -t ${params.threads_wftrx} ${params.pychopper_opts} ${path2fastq} - | pigz -p ${params.threads_wftrx} > ${smpl_id}_full_length_reads.fastq.gz
-    pychopper -t ${params.threads_wftrx} ${params.pychopper_opts} ${path2fastq} - | gzip > ${smpl_id}_full_length_reads.fastq.gz
+    """    
+    cat ${path2fastq}/*.fastq.gz > all.raw.fastq.gz
     
+    # pychopper -t ${params.threads_wftrx} ${params.pychopper_opts} ${path2fastq} all.raw.fastq.gz ${smpl_id}_full_length_reads.fastq
+    # gzip ${smpl_id}_full_length_reads.fastq > ${smpl_id}_full_length_reads.fastq.gz
+    
+    #pigz -p ${params.threads_wftrx} ${smpl_id}_full_length_reads.fastq
+    
+    # alt
+    # pychopper -t 4 -k PCS111 -m edlib all.raw.fastq.gz - | gzip > ${smpl_id}_full_length_reads.fastq.gz
+
+
     cat <<-END_VERSIONS > versions.txt
     Software versions for LR-trx-proc.nf
     \$( date )
@@ -239,114 +252,6 @@ process gffcompare_stringtie {
     """
 
 }
-
-
-
-// process espresso_run {
-//     publishDir params.espOut, mode:'copy'
-
-//     label 'big_mem'
-
-//     input:
-//     tuple path(bamfile), val(smpl_id)
-    
-//     output:
-//     path "${smpl_id}/espresso_s_summary.txt"
-//     path "${smpl_id}/SJ_group_all.fa"
-//     path "${smpl_id}/*abundance.esp"
-//     path "${smpl_id}/*updated.gtf"
-//     path "${smpl_id}/1_SJ_simplified.list"
-//     path "${smpl_id}/espresso_q_summary.txt"
-//     path "${smpl_id}/0/1_read_final.txt"
-//     path "${smpl_id}/0/espresso_c_summary.txt"
-//     path "${smpl_id}/0/sam.list3"
-//     path "${smpl_id}/0/sj.list"
-//     path "${smpl_id}/${smpl_id}.espresso.updated.gtf", emit: espresso_gtf_ch
-
-
-//     script:
-//     """
-//     mkdir ${smpl_id}
-
-//     echo "${bamfile}\t${smpl_id}" >>sample_sheet.tsv
-
-//     #perl /espresso/src/ESPRESSO_S.pl -M M -L sample_sheet.tsv -T ${task.cpus} --sort_buffer_size ${task.memory} -F ${params.refFa} -A ${params.refGTF} -O ${smpl_id}
-//     #perl /espresso/src/ESPRESSO_C.pl -I ${smpl_id} -F ${params.refFa} -X 0 -T ${task.cpus} --sort_buffer_size ${task.memory}
-//     #perl /espresso/src/ESPRESSO_Q.pl -L "${smpl_id}/sample_sheet.tsv.updated" -A ${params.refGTF} -T ${task.cpus}
-
-//     perl /espresso/src/ESPRESSO_S.pl -M M -L sample_sheet.tsv -T ${params.espresso_cpus} --sort_buffer_size ${params.espresso_mem} -F ${params.refFa} -A ${params.refGTF} -O ${smpl_id}
-//     perl /espresso/src/ESPRESSO_C.pl -I ${smpl_id} -F ${params.refFa} -X 0 -T ${params.espresso_cpus} --sort_buffer_size ${params.espresso_mem}
-//     perl /espresso/src/ESPRESSO_Q.pl -L "${smpl_id}/sample_sheet.tsv.updated" -A ${params.refGTF} -T ${params.espresso_cpus}
-
-//     cp ${smpl_id}/*updated.gtf ${smpl_id}/${smpl_id}.espresso.updated.gtf 
-
-//     date >>${params.verfile}
-//     echo "ESPRESSO" >>${params.verfile}
-//     perl /espresso/src/ESPRESSO_S.pl --help >>${params.verfile}
-//     echo "" >>${params.verfile}
-//     perl /espresso/src/ESPRESSO_C.pl --help >>${params.verfile}
-//     echo "" >>${params.verfile}
-//     perl /espresso/src/ESPRESSO_Q.pl --help >>${params.verfile}
-//     echo "" >>${params.verfile}
-//     """
-// }
-
-
-// process espresso_merge {
-//     publishDir params.espmOut, mode:'copy'
-
-//     label 'mid_mem'
-
-//     input:
-//     path espresso_gtfs
-
-//     output:
-//     path("${params.projname}.espresso.merged.gtf"), emit: espresso_merged_ch
-
-//     script:
-//     """
-//     stringtie --merge ${espresso_gtfs}  -G ${params.refGTF} -o ${params.projname}.espresso.merged.gtf
-
-//     date >>${params.verfile}
-//     echo "stringtie" >>${params.verfile}
-//     stringtie --version >>${params.verfile}
-//     echo "" >>${params.verfile}
-//     """
-
-// }
-
-
-// process gffcompare_espresso {
-//     publishDir params.espGffCmpOut, mode:'copy'
-
-//     label 'small'
-
-//     input:
-//     path espresso_merged
-
-//     output:
-//     path("gffcompare_espresso.stats")
-//     path("gffcompare_espresso.annotated.gtf")
-//     path("gffcompare_espresso.loci")
-//     path("gffcompare_espresso.${espresso_merged}.refmap")
-//     path("gffcompare_espresso.${espresso_merged}.tmap")
-
-
-//     script:
-//     """
-//     gffcompare -R -r ${params.refGTF} -o gffcompare_espresso $espresso_merged
-    
-//     date >>${params.verfile}
-//     echo "gffcompare" >>${params.verfile}
-//     gffcompare --version >>${params.verfile}
-//     echo "" >>${params.verfile}
-//     """
-
-// }
-
-
-
-
 
 
 process espresso_s_input {
