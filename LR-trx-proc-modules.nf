@@ -77,7 +77,7 @@ process preprocess_reads {
     #pigz -p ${params.threads_wftrx} ${smpl_id}_full_length_reads.fastq
     
     # alt
-    # pychopper -t 4 -k PCS111 -m edlib all.raw.fastq.gz - | gzip > ${smpl_id}_full_length_reads.fastq.gz
+    pychopper -t 4 -k PCS111 -m edlib all.raw.fastq.gz - | gzip > ${smpl_id}_full_length_reads.fastq.gz
 
 
     cat <<-END_VERSIONS > versions.txt
