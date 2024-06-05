@@ -20,6 +20,7 @@ params.pipelinename="LR transcriptomics analysis pipeline"
 params.resdir = "results"
 params.projdir = "${launchDir}/${params.projname}"
 params.outdir = "${params.projdir}/${params.resdir}"
+params.prefixOut="${params.projname}"
 
 
 log.info """\

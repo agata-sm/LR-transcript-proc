@@ -26,6 +26,7 @@ params.espressoOutQ="${params.outdir}/ESPRESSO/ESPRESSO_Q"
 
 params.readsPreprocOut="${params.outdir}/pychopper"
 params.readsMappedOut="${params.outdir}/minimap2"
+params.sqantiQCOut="${params.outdir}/SQANTI"
 
 
 // assets
@@ -54,6 +55,9 @@ process preprocess_reads {
     publishDir params.readsPreprocOut, mode:'copy',
     saveAs: {filename ->
         if (filename.endsWith(".fastq.gz")) "$filename"
+        else if (filename.endsWith(".pdf")) "$filename"
+        else if (filename.endsWith(".tsv")) "$filename"
+        else if (filename.endsWith(".txt")) "$filename"
     }
 
 
@@ -66,6 +70,10 @@ process preprocess_reads {
 
     output:
     tuple path("${smpl_id}_full_length_reads.fastq.gz"), val("${smpl_id}"), emit: full_len_reads
+    path "*.pdf"
+    path "*.tsv"
+    path "versions.txt"
+
 
     script:
     """    
@@ -79,6 +87,8 @@ process preprocess_reads {
     # alt
     pychopper -t 4 -k PCS111 -m edlib all.raw.fastq.gz - | gzip > ${smpl_id}_full_length_reads.fastq.gz
 
+    mv pychopper.tsv "${smpl_id}.pychopper.tsv"
+    mv pychopper.pdf "${smpl_id}.pychopper.pdf"
 
     cat <<-END_VERSIONS > versions.txt
     Software versions for LR-trx-proc.nf
@@ -119,6 +129,7 @@ process map_genome {
     saveAs: {filename ->
         if (filename.endsWith(".bam")) "$filename"
         else if (filename.endsWith(".bai")) "$filename"
+        else if (filename.endsWith(".txt")) "$filename"
     }
 
 
@@ -133,10 +144,11 @@ process map_genome {
     output:
     tuple path("${smpl_id}_all_alns.minimap2.bam"), val(smpl_id), emit: mapped_genome_ch
     //tuple path("${smpl_id}_all_alns.minimap2.bam"), path("${smpl_id}_all_alns.minimap2.bam.bai"), val(smpl_id), emit: mapped_genome_ch
+    path "versions.txt"
 
     script:
     """
-    minimap2 -t ${params.threads_mid_mem} -ax splice -uf ${genome_idx_ch} ${fastq_proc} | samtools view -hbo -| samtools sort -@ ${params.threads_mid_mem} -o ${smpl_id}_all_alns.minimap2.bam -
+    minimap2 -t ${params.threads_mid_mem} -ax splice -uf ${genome_idx_ch} ${fastq_proc} | samtools view -hbo -| samtools sort -@ ${params.threads_mid_mem} -o "${smpl_id}_all_alns.minimap2.bam" -
 
     samtools index ${smpl_id}_all_alns.minimap2.bam
 
@@ -204,10 +216,11 @@ process stringtie_merge {
 
     output:
     path("${params.projname}.stringtie.merged.gtf"), emit: stringtie_merged_ch
+    path "versions.txt"
 
     script:
     """
-    stringtie --merge ${stringtie_gtfs}  -G ${params.refGTF} -o ${params.projname}.stringtie.merged.gtf
+    stringtie --merge ${stringtie_gtfs}  -G ${params.refGTF} -o ${params.prefixOut}.stringtie.merged.gtf
 
     cat <<-END_VERSIONS > versions.txt
     Software versions for LR-trx-proc.nf
@@ -236,6 +249,7 @@ process gffcompare_stringtie {
     path("gffcompare_stringtie.loci")
     path("gffcompare_stringtie.${stringtie_merged}.refmap")
     path("gffcompare_stringtie.${stringtie_merged}.tmap")
+    path "versions.txt"
 
 
     script:
@@ -272,6 +286,7 @@ process espresso_s_input {
     path("ESPRESSO_S"), emit: espresso_s_out_ch
     path("ESPRESSO_S/sample_sheet.tsv.updated"), emit: espresso_s_samplesheet_ch
     path("espresso_s_summary.txt")
+    path "versions.txt"
 
     script:
     """
@@ -313,6 +328,7 @@ process espresso_c_smpl {
     output:
     path "espressoS/${smpl_idx}", emit: espresso_c_smpl_ch
     path "${smpl_id}.espresso_c_summary.txt"
+    path "versions.txt"
 
 
     script:
@@ -343,6 +359,7 @@ process espresso_q_input {
     saveAs: {filename ->
         if (filename.endsWith("updated.gtf")) "$filename"
         else if (filename.endsWith("abundance.esp")) "$filename"
+        else if (filename.endsWith(".txt")) "$filename"
     }
 
 
@@ -356,6 +373,7 @@ process espresso_q_input {
     output:
     path "*updated.gtf", emit: espresso_gtf_ch
     path "*abundance.esp"
+    path "versions.txt"
 
     script:
     """
@@ -364,7 +382,7 @@ process espresso_q_input {
     cat <<-END_VERSIONS > versions.txt
     Software versions for LR-trx-proc.nf
     \$( date )
-    process **  espresso_q_input **
+    process ** espresso_q_input **
     ESPRESSO_Q.pl
     \$(perl /espresso/src/ESPRESSO_Q.pl --help | grep -E "Program | Version" )
     END_VERSIONS
@@ -385,6 +403,7 @@ process gffcompare_espresso {
 
     output:
     path("gffcompare_espresso.*")
+    path "versions.txt"
 
     script:
     """
@@ -399,5 +418,39 @@ process gffcompare_espresso {
     \$( gffcompare --version )
     END_VERSIONS
     """
+
+}
+
+
+process sqanti_qc {
+
+    publishDir params.sqantiQCOut, mode:'copy'
+
+    label 'mid_mem'
+
+    input:
+    path espresso_gtf_ch
+
+    output:
+    path "SQANTI_QC/*"
+    path "versions.txt"
+
+    script:
+    """
+    sqanti3_qc.py ${params.sqanti_opts} -t ${params.threads_wftrx}\
+     -o ${params.prefixOut} \
+     -d SQANTI_QC \
+     ${espresso_gtf_ch} ${params.refGTF} ${params.refFa} 
+
+
+    cat <<-END_VERSIONS > versions.txt
+    Software versions for LR-trx-proc.nf
+    \$( date )
+    process **  sqanti_qc **
+    SQANTI
+    \$( sqanti3_qc.py --version )
+    END_VERSIONS
+    """
+
 
 }
