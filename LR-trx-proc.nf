@@ -43,7 +43,7 @@ println ""
 // processes
 //include { stringtie; espresso_run; stringtie_merge; gffcompare_stringtie; espresso_merge; gffcompare_espresso; map_genome} from './LR-trx-proc-modules.nf'
 
-include { preprocess_reads; genome_idx; map_genome; stringtie; stringtie_merge; gffcompare_stringtie; gffcompare_espresso; espresso_s_input; espresso_c_smpl; espresso_q_input} from './LR-trx-proc-modules.nf'
+include { preprocess_reads; genome_idx; map_genome; stringtie; stringtie_merge; gffcompare_stringtie; gffcompare_espresso; espresso_s_input; espresso_c_smpl; espresso_q_input; sqanti_qc} from './LR-trx-proc-modules.nf'
 
 
 ///////////////////////////
@@ -121,8 +121,8 @@ workflow {
 
 	gffcompare_espresso(espresso_q_input.out.espresso_gtf_ch)
 
-
 	// SQANTI
+	sqanti_qc(espresso_q_input.out.espresso_gtf_ch)
 
 
 
