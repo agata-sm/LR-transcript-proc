@@ -1,7 +1,7 @@
 process genome_idx {
 
     label 'mid_mem'
-    label 'wftrx'
+    
     container = 'docker://nanozoo/minimap2:2.28--9e3bd01'
 
     input:
