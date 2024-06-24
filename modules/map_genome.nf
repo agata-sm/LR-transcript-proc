@@ -20,10 +20,10 @@ process map_genome {
 
     """
     minimap2 -t ${task.cpus} \\
-    ${args} -a \\ 
+    ${args} -a \\
     ${genome_idx_ch} ${fastq_proc} \\
     | samtools sort -@ ${task.cpus} \\
-    --write-index \\ 
+    --write-index \\
     -o "${smpl_id}_all_alns.minimap2.bam" -
 
     cat <<-END_VERSIONS > versions.txt
