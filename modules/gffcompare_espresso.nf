@@ -2,7 +2,7 @@ process gffcompare_espresso {
 
     label 'gffcompare_stringtie'
     label 'small'
-    container = 'docker://agatasm/gffcompare-0.12.9'
+    container = 'docker://agatasm/gffcompare:0.12.9'
 
     input:
     path espresso_gtf_ch
