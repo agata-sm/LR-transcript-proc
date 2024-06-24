@@ -18,13 +18,14 @@ process espresso_c_smpl {
 
     script:
     def ext_args = task.ext.args ?: ''
+    def gigabyte = (task.memory ?: MemoryUnit.of('2.Gb')).getGiga()
     """
     cp -r ESPRESSO_S espressoS ## to isolate the execution process
 
     perl /espresso/src/ESPRESSO_C.pl ${ext_args} \\
         -I espressoS \\
         -T ${task.cpus} \\
-        --sort_buffer_size ${task.memory} \\
+        --sort_buffer_size ${gigabyte}G \\
         -F ${params.refFa} \\
         -X ${smpl_idx}
 
