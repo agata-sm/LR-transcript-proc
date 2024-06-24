@@ -25,7 +25,7 @@ process espresso_s_input {
         -O ESPRESSO_S \\
         -M ${params.espresso_mito} \\
         -T ${task.cpus} \\
-        --sort_buffer_size ${memory} \\
+        --sort_buffer_size ${task.memory} \\
         -F ${params.refFa} \\
         -A ${params.refGTF}
 
