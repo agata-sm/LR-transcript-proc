@@ -24,7 +24,7 @@ process espresso_s_input {
         -L sample_sheet.tsv \\
         -O ESPRESSO_S \\
         -M ${params.espresso_mito} \\
-        -T ${cpus} \\
+        -T ${task.cpus} \\
         --sort_buffer_size ${memory} \\
         -F ${params.refFa} \\
         -A ${params.refGTF}

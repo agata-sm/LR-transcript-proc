@@ -15,7 +15,7 @@ process sqanti_qc {
     def args = task.ext.args ?: ''
     """
     sqanti3_qc.py ${args} \\
-        -t ${cpus} \\
+        -t ${task.cpus} \\
         -o ${params.prefixOut} \\
         -d SQANTI_QC \\
         ${espresso_gtf_ch} ${params.refGTF} ${params.refFa} 

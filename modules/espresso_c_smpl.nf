@@ -23,7 +23,7 @@ process espresso_c_smpl {
 
     perl /espresso/src/ESPRESSO_C.pl ${ext_args} \\
         -I espressoS \\
-        -T ${cpus} \\
+        -T ${task.cpus} \\
         --sort_buffer_size ${memory} \\
         -F ${params.refFa} \\
         -X ${smpl_idx}

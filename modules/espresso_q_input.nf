@@ -19,7 +19,7 @@ process espresso_q_input {
     perl /espresso/src/ESPRESSO_Q.pl  ${ext_args} \\
         -L sample_sheet.tsv.updated \\
         -A ${params.refGTF} \\
-        -T ${cpus} \\
+        -T ${task.cpus} \\
         -O .
 
     cat <<-END_VERSIONS > versions.txt
