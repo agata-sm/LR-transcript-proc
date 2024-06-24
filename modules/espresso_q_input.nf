@@ -14,7 +14,7 @@ process espresso_q_input {
     path "versions.txt"
 
     script:
-    def ext_args = task.ext.args ? : ''
+    def ext_args = task.ext.args ?: ''
     """
     perl /espresso/src/ESPRESSO_Q.pl  ${ext_args} \\
         -L sample_sheet.tsv.updated \\

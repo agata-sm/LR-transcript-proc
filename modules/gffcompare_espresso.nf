@@ -2,7 +2,7 @@ process gffcompare_espresso {
 
     label 'small'
     container = 'docker://agatasm/gffcompare-0.12.9'
-    
+
     input:
     path espresso_gtf_ch
 
@@ -11,7 +11,7 @@ process gffcompare_espresso {
     path "versions.txt"
 
     script:
-    def args = task.ext.args ? : ''
+    def args = task.ext.args ?: ''
     """
     gffcompare ${args} \\
         -r ${params.refGTF} \\

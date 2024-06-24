@@ -12,7 +12,7 @@ process stringtie_merge {
 
     script:
     
-    def args = task.ext.args ? : ''
+    def args = task.ext.args ?: ''
     
     """
     stringtie \\

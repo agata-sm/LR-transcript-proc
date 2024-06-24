@@ -16,7 +16,7 @@ process map_genome {
 
     script:
 
-    def args = task.ext.args ? : ''
+    def args = task.ext.args ?: ''
 
     """
     minimap2 -t ${task.cpus} \\

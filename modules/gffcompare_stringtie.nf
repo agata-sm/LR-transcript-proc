@@ -15,7 +15,7 @@ process gffcompare_stringtie {
     path "versions.txt"
 
     script:
-    def args = task.ext.args ? : ''
+    def args = task.ext.args ?: ''
     """
     gffcompare ${args} \\
         -r ${params.refGTF} \\

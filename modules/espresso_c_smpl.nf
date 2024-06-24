@@ -17,7 +17,7 @@ process espresso_c_smpl {
 
 
     script:
-    def ext_args = task.ext.args ? : ''
+    def ext_args = task.ext.args ?: ''
     """
     cp -r ESPRESSO_S espressoS ## to isolate the execution process
 

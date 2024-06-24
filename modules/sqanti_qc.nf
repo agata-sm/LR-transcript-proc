@@ -11,7 +11,7 @@ process sqanti_qc {
     path "versions.txt"
 
     script:
-    def args = task.ext.args ? : ''
+    def args = task.ext.args ?: ''
     """
     sqanti3_qc.py ${args} \\
         -t ${cpus} \\

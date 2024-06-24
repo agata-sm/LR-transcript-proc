@@ -15,7 +15,7 @@ process espresso_s_input {
     path "versions.txt"
 
     script:
-    def ext_args = task.ext.args ? : ''
+    def ext_args = task.ext.args ?: ''
 
     """
     bash save-espressoS-input.sh ${args}

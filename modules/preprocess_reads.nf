@@ -25,9 +25,9 @@ process preprocess_reads {
 
     script:
     
-    def args = task.ext.args ? : ''
+    def args = task.ext.args ?: ''
     
-    """    
+    """
     cat ${path2fastq}/*.fastq.gz > all.raw.fastq.gz
     
     # alt
