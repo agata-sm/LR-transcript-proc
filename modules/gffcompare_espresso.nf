@@ -1,5 +1,6 @@
 process gffcompare_espresso {
 
+    label 'gffcompare_stringtie'
     label 'small'
     container = 'docker://agatasm/gffcompare-0.12.9'
 

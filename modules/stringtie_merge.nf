@@ -1,5 +1,5 @@
 process stringtie_merge {
-    
+    label 'stringtie_merge'
     label 'mid_mem'
     container = 'docker://ctomlins/stringtie2'
 

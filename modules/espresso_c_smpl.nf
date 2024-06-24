@@ -1,6 +1,6 @@
 process espresso_c_smpl {
-
-    label 'espressoC'
+    
+    label 'espresso_c_smpl'
 
     container = 'docker://agatasm/espresso-1.4.0-perl'
 

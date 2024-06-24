@@ -1,5 +1,5 @@
 process stringtie {
-
+    label 'stringtie'
     label 'mid_mem'
 
     tag {smpl_id}

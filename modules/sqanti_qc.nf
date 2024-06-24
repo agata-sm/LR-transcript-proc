@@ -1,5 +1,6 @@
 process sqanti_qc {
 
+    label 'sqanti_qc'
     label 'mid_mem'
     container = 'docker://pippel/squanti3:v5.2.1'
 

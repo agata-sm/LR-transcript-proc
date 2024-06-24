@@ -1,6 +1,6 @@
 process genome_idx {
 
-    label 'mid_mem'
+    label 'genome_idx'
     
     container = 'docker://nanozoo/minimap2:2.28--9e3bd01'
 

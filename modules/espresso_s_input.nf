@@ -1,6 +1,6 @@
 process espresso_s_input {
 
-    label 'espressoS'
+    label 'espresso_s_input'
     
     container = 'docker://agatasm/espresso-1.4.0-perl'
 

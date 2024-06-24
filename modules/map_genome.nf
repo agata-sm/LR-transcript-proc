@@ -1,7 +1,7 @@
 process map_genome {
 
+    label 'map_genome'
     label 'mid_mem'
-    label 'wftrx'
     container = 'docker://nanozoo/minimap2:2.28--9e3bd01'
 
     tag {smpl_id}
