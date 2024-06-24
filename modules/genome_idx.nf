@@ -12,7 +12,7 @@ process genome_idx {
 
     script:
     
-    def args = task.ext.args ? :''
+    def args = task.ext.args ?: ''
 
     """
     minimap2 -t ${task.cpus} ${args} -d "genome.minimap.idx.mmi" ${genome_ch}
