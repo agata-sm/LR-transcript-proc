@@ -2,7 +2,7 @@ process espresso_s_input {
 
     label 'espresso_s_input'
     
-    container = 'docker://agatasm/espresso-1.4.0-perl'
+    container = 'docker://agatasm/espresso-1.4.0:perl'
 
     input:
     val(args)

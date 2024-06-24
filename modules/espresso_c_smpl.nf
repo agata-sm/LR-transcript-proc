@@ -2,7 +2,7 @@ process espresso_c_smpl {
     
     label 'espresso_c_smpl'
 
-    container = 'docker://agatasm/espresso-1.4.0-perl'
+    container = 'docker://agatasm/espresso-1.4.0:perl'
 
     tag {smpl_id}
 

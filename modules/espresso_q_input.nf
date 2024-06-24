@@ -2,7 +2,7 @@ process espresso_q_input {
 
     label 'espresso_q_input'
 
-    container = 'docker://agatasm/espresso-1.4.0-perl'
+    container = 'docker://agatasm/espresso-1.4.0:perl'
 
     input:
     path espresso_c_smpl_ch
