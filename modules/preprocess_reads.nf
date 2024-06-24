@@ -9,6 +9,7 @@ process preprocess_reads {
     parametrise the extension of fastq files in input
     */
 
+    label 'preprocess_reads'
     label 'wftrx'
     tag {smpl_id}
     container = 'docker://ontresearch/wf-transcriptomes:sha203915eb4b4dd444cb2e845d0b9f7814e26b7b5c'
