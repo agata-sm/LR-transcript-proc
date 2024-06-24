@@ -16,6 +16,7 @@ process espresso_s_input {
 
     script:
     def ext_args = task.ext.args ?: ''
+    def gigabyte = MemoryUnit(${task.memory}).getGiga()
 
     """
     bash save-espressoS-input.sh ${args}
@@ -25,7 +26,7 @@ process espresso_s_input {
         -O ESPRESSO_S \\
         -M ${params.espresso_mito} \\
         -T ${task.cpus} \\
-        --sort_buffer_size ${task.memory} \\
+        --sort_buffer_size ${gigabyte}G \\
         -F ${params.refFa} \\
         -A ${params.refGTF}
 
