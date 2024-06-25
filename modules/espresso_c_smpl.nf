@@ -18,7 +18,7 @@ process espresso_c_smpl {
 
     script:
     def ext_args = task.ext.args ?: ''
-    def gigabyte = (task.memory ?: MemoryUnit.of('2.Gb')).getGiga()
+    def gigabyte = (task.memory ?: MemoryUnit.of('2.Gb')).getGiga() / task.cpus
     """
     cp -r ESPRESSO_S espressoS ## to isolate the execution process
 
