@@ -18,7 +18,7 @@ process espresso_s_input {
     def ext_args = task.ext.args ?: ''
     def gigabyte = (task.memory ?: MemoryUnit.of('2.Gb')).getGiga() / task.cpus
     """
-    bash save-espressoS-input.sh ${args}
+    bash $projectDir/bin/save-espressoS-input.sh ${args}
 
     perl /espresso/src/ESPRESSO_S.pl ${ext_args} \\
         -L sample_sheet.tsv \\

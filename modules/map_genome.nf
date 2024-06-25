@@ -19,8 +19,11 @@ process map_genome {
     def args = task.ext.args ?: ''
 
     """
+    paftools.js gff2bed ${params.refGTF} > junctions.bed
+
     minimap2 -t ${task.cpus} \\
     ${args} -a \\
+    --junc-bed junctions.bed \\
     ${genome_idx_ch} ${fastq_proc} \\
     | samtools sort -@ ${task.cpus} \\
     --write-index \\
