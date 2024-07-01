@@ -98,8 +98,9 @@ workflow {
 
 	full_len_reads_map_ch=preprocess_reads.out.full_len_reads
 	full_len_reads_map_ch
-			.combine(genome_idx.out.genome_idx_ch)
-			.set {full_len_reads_map_ch}
+		.combine(genome_idx.out.genome_idx_ch)
+		.combine()
+		.set {full_len_reads_map_ch}
 	map_genome(full_len_reads_map_ch)
 
 	//stringtie
