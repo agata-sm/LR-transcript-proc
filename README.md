@@ -79,6 +79,84 @@ params {
 }
 ```
 
+### Some feedback for the 1st run on the dardel compute cluster
+
+The average compute node has 256 cores but only 232Gb RAM. As the memory is evenly distributed
+among the 256 cores, this results in only 0.9Gb per core! And the cores are updated according to the requested memory for every slurm jobs, which usually results in a high penalty of "unused CPUs".
+Therefore we need to get a good estimate of the required memory for each step of the pipeline.
+And if a memory increase for a process is required, then try to increase the CPU-cores as well (as you get charged anyway for those).
+
+**0. Data**
+
+- human reference genome
+- cDNA data set:
+
+| barcode |    num_seq |        sum_len |
+| :------ | ---------: | -------------: |
+| 01      | 22,566,774 | 21,752,143,183 |
+| 02      | 23,179,382 | 19,244,463,129 |
+
+**1. recommended setup for next runs with human reference genome on Dardel compute cluster:**
+
+```bash
+    withName: 'preprocess_reads' {
+        memory = 40.GB
+        cpus   = 40
+        time   = 6.h
+    }
+    withName: 'genome_idx' {
+        memory = 18.GB
+        cpus   = 20
+        time   = 2.h
+    }
+    withName: 'map_genome' {
+        memory = 30.GB
+        cpus   = 30
+        time   = 6.h
+    }
+    withName: 'stringtie' {
+        memory = 6.GB
+        cpus   = 8
+        time   = 2.h
+    }
+    withName: 'stringtie_merge' {
+        memory = 1.GB
+        cpus   = 1
+        time   = 1.h
+    }
+    withName: 'gffcompare_stringtie' {
+        memory = 2.GB
+        cpus   = 1
+        time   = 1.h
+    }
+    withName: 'espresso_s_input' {
+        memory = 30.GB
+        cpus   = 30
+        time   = 6.h
+
+    }
+    withName: 'espresso_c_smpl' {
+        memory = 45.GB
+        cpus   = 45
+        time   = 2.d
+    }
+    withName: 'espresso_q_input' {
+        memory = 140.GB
+        cpus   = 80
+        time   = 6.h
+    }
+    withName: 'gffcompare_espresso' {
+        memory = 2.GB
+        cpus   = 1
+        time   = 1.h
+    }
+    withName: 'sqanti_qc' {
+        memory = 8.GB
+        cpus   = 10
+        time   = 2.h
+    }
+```
+
 # Original README:
 
 # Test run on Rackham
