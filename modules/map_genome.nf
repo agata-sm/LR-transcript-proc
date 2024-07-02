@@ -13,6 +13,7 @@ process map_genome {
     tuple path("${smpl_id}_all_alns.minimap2.bam"), val(smpl_id), emit: mapped_genome_ch
     //tuple path("${smpl_id}_all_alns.minimap2.bam"), path("${smpl_id}_all_alns.minimap2.bam.bai"), val(smpl_id), emit: mapped_genome_ch
     path "versions.txt"
+    path "${smpl_id}_all_alns.minimap2.stats.txt"
 
     script:
 
@@ -29,6 +30,8 @@ process map_genome {
     --write-index \\
     -o "${smpl_id}_all_alns.minimap2.bam" -
 
+    samtools stats -@ ${task.cpus} ${smpl_id}_all_alns.minimap2.bam > ${smpl_id}_all_alns.minimap2.stats.txt
+    
     cat <<-END_VERSIONS > versions.txt
     Software versions for LR-trx-proc.nf
     \$( date )
