@@ -18,7 +18,6 @@ process stringtie_merge {
     stringtie \\
         ${args} \\
         --merge ${stringtie_gtfs} \\
-        -G ${params.refGTF} \\
         -o ${params.prefixOut}.stringtie.merged.gtf
 
     cat <<-END_VERSIONS > versions.txt
