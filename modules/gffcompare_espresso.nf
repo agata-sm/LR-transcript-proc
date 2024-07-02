@@ -8,7 +8,11 @@ process gffcompare_espresso {
     path espresso_gtf_ch
 
     output:
-    path("gffcompare_espresso.*")
+    path("gffcompare_espresso.stats")
+    path("gffcompare_espresso.annotated.gtf")
+    path("gffcompare_espresso.loci")
+    path("gffcompare_espresso.${espresso_gtf_ch}.refmap")
+    path("gffcompare_espresso.${espresso_gtf_ch}.tmap")
     path "versions.txt"
 
     script:
