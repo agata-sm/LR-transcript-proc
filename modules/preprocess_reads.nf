@@ -19,8 +19,8 @@ process preprocess_reads {
 
     output:
     tuple path("${smpl_id}_full_length_reads.fastq.gz"), val("${smpl_id}"), emit: full_len_reads
-    path "*.pdf"
-    path "*.tsv"
+    path "*.pdf", optional: true
+    path "*.tsv", optional: true
     path "versions.txt"
 
 
@@ -31,13 +31,18 @@ process preprocess_reads {
     """
     cat ${path2fastq}/*.fastq.gz > all.raw.fastq.gz
     
-    # alt
-    pychopper -t $task.cpus \\
-        ${args} \\
-        all.raw.fastq.gz - | bgzip -c -@ $task.cpus > ${smpl_id}_full_length_reads.fastq.gz
+    if [[ ${params.seqtype} == "cDNA" ]]
+    then 
+        # alt
+        pychopper -t $task.cpus \\
+            ${args} \\
+            all.raw.fastq.gz - | bgzip -c -@ $task.cpus > ${smpl_id}_full_length_reads.fastq.gz
 
-    mv pychopper.tsv "${smpl_id}.pychopper.tsv"
-    mv pychopper.pdf "${smpl_id}.pychopper.pdf"
+        mv pychopper.tsv "${smpl_id}.pychopper.tsv"
+        mv pychopper.pdf "${smpl_id}.pychopper.pdf"
+    else #dRNA 
+        ln -s -r all.raw.fastq.gz ${smpl_id}_full_length_reads.fastq.gz
+    fi 
 
     cat <<-END_VERSIONS > versions.txt
     Software versions for LR-trx-proc.nf

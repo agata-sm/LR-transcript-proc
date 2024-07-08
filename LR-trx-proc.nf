@@ -20,7 +20,7 @@ params.resdir    = "results"
 params.projdir   = "${launchDir}/${params.projname}"
 params.outdir    = "${params.projdir}/${params.resdir}"
 params.prefixOut = "${params.projname}"
-
+params.seqtype   = "cDNA"      // possible values ["cDNA", "dRNA"]
 
 log.info """\
  LONG READ TRANSCRIPTOME ANALYSIS - N F   P I P E L I N E
