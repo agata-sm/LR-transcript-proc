@@ -1,6 +1,5 @@
 #! /usr/bin/env nextflow
 
-
 /* 
  * pipeline for analysis of ONT LR transcriptomics data (cDNA-seq)
  * Nextflow DSL2
@@ -17,11 +16,11 @@ params.pipelinename="LR transcriptomics analysis pipeline"
 /* 
  * pipeline input parameters 
  */
-params.resdir = "results"
-params.projdir = "${launchDir}/${params.projname}"
-params.outdir = "${params.projdir}/${params.resdir}"
-params.prefixOut="${params.projname}"
-
+params.resdir    = "results"
+params.projdir   = "${launchDir}/${params.projname}"
+params.outdir    = "${params.projdir}/${params.resdir}"
+params.prefixOut = "${params.projname}"
+params.seqtype   = "cDNA"      // possible values ["cDNA", "dRNA"]
 
 log.info """\
  LONG READ TRANSCRIPTOME ANALYSIS - N F   P I P E L I N E
@@ -41,9 +40,18 @@ println ""
 
 /////////////////////////////
 // processes
-//include { stringtie; espresso_run; stringtie_merge; gffcompare_stringtie; espresso_merge; gffcompare_espresso; map_genome} from './LR-trx-proc-modules.nf'
+include { preprocess_reads     } from "$projectDir/modules/preprocess_reads.nf"
+include { genome_idx           } from "$projectDir/modules/genome_idx.nf"
+include { map_genome           } from "$projectDir/modules/map_genome.nf"
+include { stringtie            } from "$projectDir/modules/stringtie.nf"
+include { stringtie_merge      } from "$projectDir/modules/stringtie_merge.nf"
+include { gffcompare_stringtie } from "$projectDir/modules/gffcompare_stringtie.nf"
+include { gffcompare_espresso  } from "$projectDir/modules/gffcompare_espresso.nf"
+include { espresso_s_input     } from "$projectDir/modules/espresso_s_input.nf"
+include { espresso_c_smpl      } from "$projectDir/modules/espresso_c_smpl.nf"
+include { espresso_q_input     } from "$projectDir/modules/espresso_q_input.nf"
+include { sqanti_qc            } from "$projectDir/modules/sqanti_qc.nf"
 
-include { preprocess_reads; genome_idx; map_genome; stringtie; stringtie_merge; gffcompare_stringtie; gffcompare_espresso; espresso_s_input; espresso_c_smpl; espresso_q_input; sqanti_qc} from './LR-trx-proc-modules.nf'
 
 
 ///////////////////////////
@@ -57,10 +65,10 @@ println "Sample paths"
 //samples channel
 smpls_ch= Channel.fromPath(params.samplesheet, checkIfExists:true)
 	smpls_ch
-	    .splitCsv(header:true, sep: '\t', strip: true)
-	    .map{ row-> tuple(row.path, row.sample) }
-	    .view()
-	    .set { smpls_ch }
+		.splitCsv(header:true, sep: '\t', strip: true)
+		.map{ row-> tuple(row.path, row.sample) }
+		.view()
+	.set { smpls_ch }
 
 println ""
 
@@ -90,8 +98,8 @@ workflow {
 
 	full_len_reads_map_ch=preprocess_reads.out.full_len_reads
 	full_len_reads_map_ch
-			.combine(genome_idx.out.genome_idx_ch)
-			.set {full_len_reads_map_ch}
+		.combine(genome_idx.out.genome_idx_ch)
+		.set {full_len_reads_map_ch}
 	map_genome(full_len_reads_map_ch)
 
 	//stringtie
@@ -111,9 +119,9 @@ workflow {
 	// map sample ID to espresso S index
 	sample_idx_ch= espresso_s_input.out.espresso_s_samplesheet_ch
 	sample_idx_ch
-		    .splitCsv(header:false, sep: '\t', strip: true)
-		    .map{ row -> tuple( "${row[1]}","${row[2]}") }
-		    .set { sample_idx_ch }
+		.splitCsv(header:false, sep: '\t', strip: true)
+		.map{ row -> tuple( "${row[1]}","${row[2]}") }
+		.set { sample_idx_ch }
 
 	espresso_c_smpl(sample_idx_ch, espresso_s_out_ch)
 	espresso_c_for_q_ch=espresso_c_smpl.out.espresso_c_smpl_ch
@@ -124,9 +132,20 @@ workflow {
 	// SQANTI
 	sqanti_qc(espresso_q_input.out.espresso_gtf_ch)
 
-
-
 }
 
+workflow.onComplete {
+    if( workflow.success ){
+        log.info("""
+        Thanks you for using the LR-transcript-proc workflow.
+        The workflow completed successfully.
 
-
+        Results are located in the folder: $params.outdir
+        """)
+    } else {
+        log.info("""
+        Thanks you for using the LR-transcript-proc workflow.
+        The workflow completed unsuccessfully.
+        """)
+    }
+}
